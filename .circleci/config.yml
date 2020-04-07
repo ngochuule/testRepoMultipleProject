@@ -1,1 +1,51 @@
 version: 2.1
+jobs:
+  circleRepo1:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "work on project TestRepo1"  
+      - run: mkdir -p TestRepo1
+      - run: echo "Trying out workspaces" > TestRepo1/echo-output
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: TestRepo1
+          # Must be relative path from root
+          paths:
+            - echo-output      
+  circleRepo2:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "work on project TestRepo2"  
+      - run: mkdir -p TestRepo2
+      - run: echo "Trying out workspaces" > TestRepo2/echo-output
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: TestRepo2
+          # Must be relative path from root
+          paths:
+            - echo-output  
+  circleRepo3:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "work on project TestRepo3"  
+      - run: mkdir -p TestRepo3
+      - run: echo "Trying out workspaces" > TestRepo3/echo-output
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: TestRepo3
+          # Must be relative path from root
+          paths:
+            - echo-output               
+workflows:
+  version: 2
+  circleciProjects:
+    jobs:
+      - circleRepo1
+      - circleRepo2
+      - circleRepo3
