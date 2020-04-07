@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: echo "work on project TestRepo1"  
-      - run: mkdir -p TestRepo1
+      - run: cd TestRepo1
       - run: echo "Trying out workspaces" > TestRepo1/echo-output
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - run: echo "work on project TestRepo2"  
-      - run: mkdir -p TestRepo2
+      - run: cd TestRepo2
       - run: echo "Trying out workspaces" > TestRepo2/echo-output
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
@@ -34,7 +34,7 @@ jobs:
     steps:
       - checkout
       - run: echo "work on project TestRepo3"  
-      - run: mkdir -p TestRepo3
+      - run: cd TestRepo3
       - run: echo "Trying out workspaces" > TestRepo3/echo-output
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
