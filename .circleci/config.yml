@@ -20,8 +20,8 @@ jobs:
       JVM_OPTS: -Xmx5000m
     steps:
       - checkout
-      - run: echo "work on project TestRepo "  
-      - run: cd TestRepo1
+      - run: echo "work on project TestRepo1 "  
+      #- run: cd TestRepo1
       #- restore_cache:
       #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run: sdkmanager --licenses
