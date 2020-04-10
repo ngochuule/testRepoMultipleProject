@@ -21,7 +21,6 @@ jobs:
     steps:
       - checkout
       - run: echo "work on project TestRepo1 "  
-      #- run: cd TestRepo1
       #- restore_cache:
       #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run: sdkmanager --licenses
@@ -59,11 +58,121 @@ jobs:
           destination: /apks/app-debug.apk
       - store_artifacts:
           path: ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-          destination: /apks/app-debug-androidTest.apk             
+          destination: /apks/app-debug-androidTest.apk   
+  TestRepo2:
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-26
+      # API version list for Android Docker image
+      # https://hub.docker.com/r/circleci/android/tags
+      # https://circleci.com/docs/2.0/circleci-images/#android
+      # [was] - image: circleci/android:api-28
+    #branches:
+    #  only:
+    #    - master
+    resource_class: medium
+    environment:
+      JVM_OPTS: -Xmx5000m
+    steps:
+      - checkout
+      - run: echo "work on project TestRepo2 "  
+      #- restore_cache:
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run: sdkmanager --licenses
+      - run: yes | sdkmanager --update || exit 0
+      - run:
+          name: chmod permissions
+          working_directory: ~/code/TestRepo2
+          command: chmod +x  ./gradlew
+      - run:
+          working_directory: ~/code/TestRepo2
+          command: ./gradlew androidDependencies
+          when: always
+      #- save_cache:
+      #    paths:
+      #      - ~/.gradle
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Run Unit Tests against Presenter
+          working_directory: ~/code/TestRepo2
+          command: ./gradlew clean lint test
+       #   command: ./gradlew clean lint test jacocoTestReport
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/reports/tests/
+      - run:
+          name: Build apk
+          working_directory: ~/code/TestRepo2
+          command: |
+            ./gradlew :app:assembleDebug
+            ./gradlew :app:assembleDebugAndroidTest
+      - store_artifacts:
+          path: ./app/build/outputs/apk/debug/app-debug.apk
+          destination: /apks/app-debug.apk
+      - store_artifacts:
+          path: ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          destination: /apks/app-debug-androidTest.apk   
+  TestRepo3:
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-26
+      # API version list for Android Docker image
+      # https://hub.docker.com/r/circleci/android/tags
+      # https://circleci.com/docs/2.0/circleci-images/#android
+      # [was] - image: circleci/android:api-28
+    #branches:
+    #  only:
+    #    - master
+    resource_class: medium
+    environment:
+      JVM_OPTS: -Xmx5000m
+    steps:
+      - checkout
+      - run: echo "work on project TestRepo3 "  
+      #- restore_cache:
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run: sdkmanager --licenses
+      - run: yes | sdkmanager --update || exit 0
+      - run:
+          name: chmod permissions
+          working_directory: ~/code/TestRepo3
+          command: chmod +x  ./gradlew
+      - run:
+          working_directory: ~/code/TestRepo3
+          command: ./gradlew androidDependencies
+          when: always
+      #- save_cache:
+      #    paths:
+      #      - ~/.gradle
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Run Unit Tests against Presenter
+          working_directory: ~/code/TestRepo3
+          command: ./gradlew clean lint test
+       #   command: ./gradlew clean lint test jacocoTestReport
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/reports/tests/
+      - run:
+          name: Build apk
+          working_directory: ~/code/TestRepo3
+          command: |
+            ./gradlew :app:assembleDebug
+            ./gradlew :app:assembleDebugAndroidTest
+      - store_artifacts:
+          path: ./app/build/outputs/apk/debug/app-debug.apk
+          destination: /apks/app-debug.apk
+      - store_artifacts:
+          path: ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          destination: /apks/app-debug-androidTest.apk            
 workflows:
   version: 2
   circleciProjects:
     jobs:
       - TestRepo1
-#      - TestRepo2
-#      - TestRepo3
+      - TestRepo2
+      - TestRepo3
