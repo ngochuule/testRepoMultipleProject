@@ -5,7 +5,7 @@ orbs:
  
 jobs:
   TestRepo1:
-    working_directory: ~/code
+    working_directory: ~/TestRepo1
     docker:
       - image: circleci/android:api-26
       # API version list for Android Docker image
