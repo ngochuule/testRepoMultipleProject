@@ -41,7 +41,8 @@ jobs:
       - run:
           name: Run Unit Tests against Presenter
           working_directory: ~/code/TestRepo1
-          command: ./gradlew clean lint test jacocoTestReport
+          command: ./gradlew clean lint test
+       #   command: ./gradlew clean lint test jacocoTestReport
       - store_artifacts:
           path: app/build/reports
           destination: reports
