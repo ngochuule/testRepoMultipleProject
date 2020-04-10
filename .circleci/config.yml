@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   circleRepo1:
     docker:
-      - image: circleci/ruby:2.4.1
+      - image: circleci/android:api-29
     steps:
       - checkout
       - run: echo "work on project TestRepo1"  
@@ -16,7 +16,7 @@ jobs:
             - echo-output      
   circleRepo2:
     docker:
-      - image: circleci/ruby:2.4.1
+      - image: circleci/android:api-29
     steps:
       - checkout
       - run: echo "work on project TestRepo2"  
@@ -30,7 +30,7 @@ jobs:
             - echo-output  
   circleRepo3:
     docker:
-      - image: circleci/ruby:2.4.1
+      - image: circleci/android:api-29
     steps:
       - checkout
       - run: echo "work on project TestRepo3"  
