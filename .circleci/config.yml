@@ -1,51 +1,64 @@
 version: 2.1
+
+orbs:
+ android: circleci/android@0.2.0
+ 
 jobs:
-  circleRepo1:
+  TestRepo1:
+    working_directory: ~/code
     docker:
-      - image: circleci/android:api-29
+      - image: circleci/android:api-26
+      # API version list for Android Docker image
+      # https://hub.docker.com/r/circleci/android/tags
+      # https://circleci.com/docs/2.0/circleci-images/#android
+      # [was] - image: circleci/android:api-28
+    #branches:
+    #  only:
+    #    - master
+    resource_class: medium
+    environment:
+      JVM_OPTS: -Xmx5000m
     steps:
       - checkout
-      - run: echo "work on project TestRepo1"  
+      - run: echo "work on project TestRepo "  
       - run: cd TestRepo1
-      - run: echo "Trying out workspaces" > TestRepo1/echo-output
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory
-          root: TestRepo1
-          # Must be relative path from root
-          paths:
-            - echo-output      
-  circleRepo2:
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - run: echo "work on project TestRepo2"  
-      - run: cd TestRepo2
-      - run: echo "Trying out workspaces" > TestRepo2/echo-output
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory
-          root: TestRepo2
-          # Must be relative path from root
-          paths:
-            - echo-output  
-  circleRepo3:
-    docker:
-      - image: circleci/android:api-29
-    steps:
-      - checkout
-      - run: echo "work on project TestRepo3"  
-      - run: cd TestRepo3
-      - run: echo "Trying out workspaces" > TestRepo3/echo-output
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory
-          root: TestRepo3
-          # Must be relative path from root
-          paths:
-            - echo-output               
+      #- restore_cache:
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run: sdkmanager --licenses
+      - run: yes | sdkmanager --update || exit 0
+      - run:
+          name: chmod permissions
+          command: chmod +x ./gradlew
+      - run:
+          command: ./gradlew androidDependencies
+          when: always
+      #- save_cache:
+      #    paths:
+      #      - ~/.gradle
+      #    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Run Unit Tests against Presenter
+          command: ./gradlew clean lint test jacocoTestReport
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/reports/tests/
+      - run:
+          name: Build apk
+          command: |
+            ./gradlew :app:assembleDebug
+            ./gradlew :app:assembleDebugAndroidTest
+      - store_artifacts:
+          path: ./app/build/outputs/apk/debug/app-debug.apk
+          destination: /apks/app-debug.apk
+      - store_artifacts:
+          path: ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          destination: /apks/app-debug-androidTest.apk             
 workflows:
   version: 2
   circleciProjects:
     jobs:
-      - circleRepo1
-      - circleRepo2
-      - circleRepo3
+      - TestRepo1
+#      - TestRepo2
+#      - TestRepo3
